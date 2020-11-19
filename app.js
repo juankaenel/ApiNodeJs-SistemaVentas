@@ -4,6 +4,8 @@ import router from './routes/index.js'
 import morgan from 'morgan';
 import methodOverride from 'method-override';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv'
+
 
 const app = express();
 
@@ -19,6 +21,15 @@ app.use(methodOverride());
 
 // routes
 app.use('/', router);
+
+// Conexión a bd
+dotenv.config()
+const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.uy4r0.mongodb.net/${process.env.DBNAME}?retryWrites=true&w=majority`; // url de conexion
+
+mongoose.connect(uri, { useNewUrlParser:true, useUnifiedTopology: true })
+    .then(()=> console.log('Base de datos conectada'))
+    .catch(e => console.log(e))
+
 
 // starting the server
 app.listen(app.get('port'), () => {
