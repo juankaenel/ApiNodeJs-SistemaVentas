@@ -6,7 +6,7 @@ const router = express.Router();
 const userController = require('../controllers/userController.js');
 
 // ------------------ Usuarios ------------------
-router.post('/register', userController.create);
+router.post('/register', userController.authenticate);
 router.post('/authenticate', userController.authenticate);
-
+router.get('/', userController.lists);
 module.exports = router;
