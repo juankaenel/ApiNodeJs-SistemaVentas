@@ -6,6 +6,7 @@ import cors from 'cors';
 import path from 'path';
 //rutas
 import users from '../Api/routes/users.js';
+import router from './routes' // routes/index.js
 
 const app = express();
 
@@ -22,11 +23,7 @@ app.use(cors());
 /* Con bodyParser permitimos que pueda parsear JSON, methodOverride() nos permite implementar y personalizar métodos HTTP. */
 
 // registramos las rutas
-app.get('/', (req, res) => {
-    res.json({"tutorial" : "importruyendo una API REST con NodeJS"});
-});
-// publicas
-app.use('/users', users)
+app.use('/api',router);
 
 app.listen(app.get('port'), () => {
     console.log(`Server corriendo en el puerto ${app.get('port')}`);
