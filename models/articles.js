@@ -1,34 +1,42 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from 'mongoose';
 
 const articlesSchema = new Schema({
-    codigo: {
-        type: Number,
-        trim: true,
-        required: true,
+    category: {
+        type: Schema.ObjectId,
+        ref: 'category'
     },
-    nombre:{
+    code: {
         type: String,
-        required: true,
+        maxlength:64
+    },
+    name:{
+        type: String,
+        maxlength:50,
+        unique:true,
+        required:true
+    },
+    descriptionn:{
+        type: String,
+        maxlength: 255,
+    },
+    salePrince: {
+        type:Number,
+        required:true
     },
     stock:{
         type: Number,
-        trim: true,
-        required: true
+        required:true
     },
-    descripción:{
-        type: String,
-        required: false,
-    },
-    estado:{
+    state:{
         type: Boolean,
-        required: true,
+        default: 1,
     },
-    /* imagen:{
-        type: String,
-        required: true,
-    }, */
+    createdAt:{
+        type: Date,
+        default: Date.now
+    }
 });
 
+const Article = mongoose.model('articicles',articlesSchema);
 
-module.exports = mongoose.model('Articicles',articlesSchema,'articles')
+export default Article;

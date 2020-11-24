@@ -1,4 +1,4 @@
-import mongoose, {mongo, Schema} from 'mongoose';
+import mongoose, {Schema} from 'mongoose';
 
 const categorySchema = new Schema({
     name: {
@@ -21,5 +21,5 @@ const categorySchema = new Schema({
     } // fecha de creación
 });
 
-const Category = mongoose.model('Category', categorySchema, 'category');
+const Category = mongoose.model('category', categorySchema);
 export default Category;

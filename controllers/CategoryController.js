@@ -35,7 +35,7 @@ export default {
             // regExp -> El objeto RegExp se utiliza para hacer coincidir texto con un patrón. -> 'i' es para la coincidencia de mayusculas y minusculas
             //const reg = await models.Category.find({'name': new RegExp(valor, 'i')},{createdAt:0}) // en el segundo parámetro le digo q no me muestre createdAt en una consulta, si coloco por ejemplo name:1 solo me va a MOSTRAR nombre
             const reg = await models.Category.find({ $or:[ {'name': new RegExp(valor, 'i')}, {'description': new RegExp(valor,'i')}] }, {createdAt:0})
-            .sort({'createdAt':-1}) // ordena los registros de manera descendente (-1), asc (1)
+            .sort({'createdAt':-1}) // ordena los registros de manera descendente (-1) muestra los ultimos registros, asc (1)
             res.status(200).json(reg);
         } catch (error) {
             res.status(500).send({
