@@ -21,5 +21,5 @@ const categorySchema = new Schema({
     } // fecha de creación
 });
 
-const Category = mongoose.model('category', categorySchema);
+const Category = mongoose.model('category', categorySchema, 'categories');
 export default Category;

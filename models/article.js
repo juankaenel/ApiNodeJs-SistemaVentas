@@ -3,7 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 const articlesSchema = new Schema({
     category: {
         type: Schema.ObjectId,
-        ref: 'category'
+        ref: 'category' // Referencia con el modelo category
     },
     code: {
         type: String,
@@ -19,7 +19,7 @@ const articlesSchema = new Schema({
         type: String,
         maxlength: 255,
     },
-    salePrince: {
+    salePrice: {
         type:Number,
         required:true
     },
@@ -37,6 +37,6 @@ const articlesSchema = new Schema({
     }
 });
 
-const Article = mongoose.model('articicles',articlesSchema);
+const Article = mongoose.model('article',articlesSchema, 'articles');
 
 export default Article;

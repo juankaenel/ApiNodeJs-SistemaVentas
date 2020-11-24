@@ -1,7 +1,9 @@
 import Category from './category';
-import Article from './articles';
+import Article from './article';
+import User from './user';
 
 export default {
     Category,
-    Article
+    Article,
+    User
 }
