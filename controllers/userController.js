@@ -1,5 +1,7 @@
 import models from '../models/index';
 import bcryptjs from 'bcryptjs';
+import jsonwebtoken from 'jsonwebtoken'
+import token from '../services/token'
 
 export default {
     add: async (req,res,next) => {
@@ -99,11 +101,12 @@ export default {
     },
     login: async (req,res,next) => {
         try {
-            let user = await models.User.findOne({email: req.body.email}); // traigo al usuario que coincida con el email que viene del body
+            let user = await models.User.findOne({email: req.body.email, state: 1}); // traigo al usuario que coincida con el email que viene del body y cuyo estado esté activado
             if (user){ // si existe un usuario
                 let match = await bcryptjs.compare(req.body.password, user.password); // comparo que el password ingresado coincida con el encriptado
                 if(match){
-                    res.json('pass correcto')
+                    let tokenReturn = await token.encode(user._id); // llamo al services/token -> metodo encode y le paso el id del objeto user
+                    res.status(200).json({user,tokenReturn}) // retorna el token y el usuario en la petición post /api/user/login
                 }else{
                     res.status(404).send({
                         message: 'Credenciales inválidas' // en este caso no coincide el password, no hay match, pero como seguiridad decimos que puede que sea el usuario tambien que no exista
