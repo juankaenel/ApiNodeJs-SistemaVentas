@@ -1,48 +1,126 @@
-const userModel = require('../models/user');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+import models from '../models/index';
+import bcryptjs from 'bcryptjs';
 
-const userController = {};
-
-
-userController.lists = async (req,res) =>{
-    try {
-        const arrayUsuarios = await userModel.find();
-        res.json(arrayUsuarios);
-    } catch (error) {
-        console.log(error);
+export default {
+    add: async (req,res,next) => {
+        try {
+            req.body.password = await bcryptjs.hash(req.body.password,10) // recibimos el password y lo encriptamos con un salt de 10 
+            const reg = await models.User.create( req.body );
+            res.status(200).json(reg);
+        } catch (error) {
+            res.status(500).send({
+                message: 'Ocurrió un error!'
+            });
+            next(error);
+        }
+    } ,
+    query: async (req,res,next) => {
+        try {
+            const reg = await models.User.findOne( {_id : req.query._id} )
+            // poblamos con las categorias del articulo
+            .populate('category',{nombre:1}) // en este caso llamo al nombre de la categoria que hace referencia a ese articulo;
+            if (!reg) { // si no existe el arituclo
+                res.status(404).send({
+                    message: 'El artículo no existe!',
+                }); 
+            }
+            else{ // si existe
+                res.status(200).json(reg )
+            }
+        } catch (error) {
+            res.status(500).send({
+                message: 'Ocurrió un error!'
+            });
+            next(error);
+        }
+    },
+    list: async (req,res,next) => {
+        try {
+            let valor = req.query.valor; 
+            const reg = await models.User.find({ $or:[ {'name': new RegExp(valor, 'i')}, {'email': new RegExp(valor,'i')}] }, {createdAt:0})
+            .populate('category',{nombre:1}) // llamo al nombre de la categoria que hace referencia a ese articulo
+            .sort({'createdAt':-1}) 
+            res.status(200).json(reg);
+        } catch (error) {
+            res.status(500).send({
+                message: 'Ocurrió un error!'
+            });
+            next(error);
+        }
+    },
+    update: async (req,res,next) => {
+        try {
+            let pass = req.body.password;
+            const reg0 = await models.User.findOne({_id : req.body._id});
+            if (pass != reg0.password ){
+                req.body.password = bcryptjs.hash(req.body.password ) // encripto solamente cuando el password no está encriptado, sino no hay necesidad de encriptarlo
+            }
+            const reg = await models.User.findByIdAndUpdate({_id:req.body._id}, {role: req.body.role, name: req.body.name,  docType: req.body.docType, docNumber: req.body.docNumber, direction: req.body.direction, phone: req.body.phone, email: req.body.email, password: req.body.password }); // primer parámetro la búsqueda, segundo los valores a cambiar en ese registro
+            res.status(200).json(reg);
+        } catch (error) {
+            res.status(500).send({
+                message: 'Ocurrió un error!'
+            });
+            next(error);
+        }
+    },
+    remove: async (req,res,next) => {
+        try {
+            const reg = await models.User.findByIdAndDelete({_id:req.body._id});
+            res.status(200).json(reg);
+        } catch (error) {
+            res.status(500).send({
+                message: 'Ocurrió un error!'
+            });
+            next(error);
+        }
+    },
+    activate: async (req,res,next) => {
+        try {
+            const reg = await models.User.findByIdAndUpdate({_id:req.body._id},{state:1});
+            res.status(200).json(reg);
+        } catch (error) {
+            res.status(500).send({
+                message: 'Ocurrió un error!'
+            });
+            next(error);
+        }
+    },
+    deactivate: async (req,res,next) => {
+        try {
+            const reg = await models.User.findByIdAndUpdate({_id:req.body._id},{state:0});
+            res.status(200).json(reg);
+        } catch (error) {
+            res.status(500).send({
+                message: 'Ocurrió un error!'
+            });
+            next(error);
+        }
+    },
+    login: async (req,res,next) => {
+        try {
+            let user = await models.User.findOne({email: req.body.email}); // traigo al usuario que coincida con el email que viene del body
+            if (user){ // si existe un usuario
+                let match = await bcryptjs.compare(req.body.password, user.password); // comparo que el password ingresado coincida con el encriptado
+                if(match){
+                    res.json('pass correcto')
+                }else{
+                    res.status(404).send({
+                        message: 'Credenciales inválidas' // en este caso no coincide el password, no hay match, pero como seguiridad decimos que puede que sea el usuario tambien que no exista
+                    })
+                }
+            }
+            else{
+                res.status(404).send({
+                    message: 'Credenciales inválidas' // no existe el usuario ingresado
+                })
+            }    
+        }
+        catch (error) {
+            res.status(500).send({
+                message: 'Ocurrió un error!'
+            });
+            next(error);
+        }
     }
 }
-
-userController.create = async (req, res, next) => {
-    userModel.create({
-        nombre: req.body.nombre,
-        email: req.body.email,
-        password: req.body.password,
-        function(error, result) {
-            if (error) {
-                next(error);
-            }
-            else {
-                res.json({ status: "Ok", message: "Usuario agregado con éxito", data: null });
-            }
-        }
-    })
-}
-
-userController.authenticate = async (req, res) => {
-    userModel.findOne({ email: req.body.email }, function (error, userInfo) { // userInfo viene de la bd
-        if (error) {
-            next(error);
-        } else {
-            if (bcrypt.compareSync(req.body.password, userInfo.password)) {
-                const token = jwt.sign({ id: userInfo._id }, req.app.get('secretKey'), { expiresIn: '1h' });
-                res.json({ status: 'Ok', message: "El usuario ha sido autenticado!", data: { user: userInfo, token: token } })
-            } else {
-                res.json({ status: 'error', message: "Password o Email inválido", data: null });
-            }
-        }
-    })
-}
-
-module.exports = userController;
