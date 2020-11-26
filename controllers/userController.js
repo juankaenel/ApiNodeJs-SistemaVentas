@@ -40,7 +40,7 @@ export default {
         try {
             let valor = req.query.valor; 
             const reg = await models.User.find({ $or:[ {'name': new RegExp(valor, 'i')}, {'email': new RegExp(valor,'i')}] }, {createdAt:0})
-            .populate('category',{nombre:1}) // llamo al nombre de la categoria que hace referencia a ese articulo
+            .populate('category',{name:1}) // llamo al nombre de la categoria que hace referencia a ese articulo
             .sort({'createdAt':-1}) 
             res.status(200).json(reg);
         } catch (error) {
