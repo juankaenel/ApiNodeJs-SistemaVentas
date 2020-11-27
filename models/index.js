@@ -9,5 +9,5 @@ export default {
     Article,
     User,
     Person,
-    Revenue
+    Revenue // ingreso
 }

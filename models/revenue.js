@@ -22,6 +22,11 @@ const revenueSchema = new Schema({
         maxlength: 10,
         required: true,
     },
+    voucherSeries:{ // serie de comprobante
+        type:String,
+        maxlength: 7,
+    }
+    ,
     tax:{ // impuesto
         type: Number,
         required: true,
