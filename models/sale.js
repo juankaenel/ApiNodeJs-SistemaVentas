@@ -1,15 +1,15 @@
 /* Modelo ingreso */
 import mongoose, {Schema} from 'mongoose';
 
-const revenueSchema = new Schema({
+const saleSchema = new Schema({
     user: {
         type: Schema.ObjectId,
-        ref: 'user', // referencia al modelo user -> quien registro el ingreso
+        ref: 'user', // referencia al modelo user -> quien registra la venta
         required: true,
     },
     person:{
         type: Schema.ObjectId,
-        ref: 'person', // referencia al modelo persona -> si fue un cliente o proveedor
+        ref: 'person', // referencia al modelo persona
         required: true,
     },
     comprobantType: {
@@ -34,7 +34,7 @@ const revenueSchema = new Schema({
     total:{
         type: Number,
         required: true
-    }, // relación uno a pocos con detalles , una venta tiene pocos detalles
+    }, // dentro de una venta puedo tener varios articulos, eso los guardaré en detalles como un array, dentro del mismo irán los objetos de articulos
     details:[{ // una compra tiene varios articulos -> esto es un una propiedad que contiene un modelo embebido. Se utiliza en una relación 1 a pocas 
         _id:{ // id article
             type:String,
@@ -51,6 +51,10 @@ const revenueSchema = new Schema({
         price: {
             type:Number,
             required: true,
+        },
+        discount:{
+            type:Number,
+            required: true,
         }
     }]
     ,
@@ -64,6 +68,6 @@ const revenueSchema = new Schema({
     }
 });
 
-const Revenue = mongoose.model('revenue',revenueSchema);
+const Sale = mongoose.model('sale',saleSchema);
 
-export default Revenue;
+export default Sale;
