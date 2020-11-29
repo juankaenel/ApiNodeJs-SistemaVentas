@@ -15,11 +15,11 @@ async function decreaseStock(idarticle,quantity){ // disminuir stock
 export default {
     add: async (req,res,next) => {
         try {
-            const reg = await models.Revenue.create( req.body );
+            const reg = await models.Sale.create( req.body );
             // Actualizamos stock
             let details = req.body.details; // traigo el array de detalles
             details.map( x => { // lo itero por cada articulo y le aumento el stock
-                increaseStock(x._id, x.quantity); // llamo a la func stock y le paso el id y cantidad
+                decreaseStock(x._id, x.quantity); // llamo a la func disminui stock y le paso el id y cantidad
             });
             res.status(200).json(reg);
         } catch (error) {
@@ -31,8 +31,8 @@ export default {
     } ,
     query: async (req,res,next) => {
         try {
-            const reg = await models.Revenue.findOne( {_id : req.query._id} )
-            .populate('user', {name:1}) // usr que registro la compra/ingreso
+            const reg = await models.Sale.findOne( {_id : req.query._id} )
+            .populate('user', {name:1}) // usr que registro la venta/egreso
             .populate('person',{name:1}) // proveedor responsable del ingreso
             if (!reg) { // si no existe el ingreso
                 res.status(404).send({
@@ -52,7 +52,7 @@ export default {
     list: async (req,res,next) => {
         try {
             let valor = req.query.valor; 
-            const reg = await models.Revenue.find({ $or:[ {'comprobantNumber': new RegExp(valor, 'i')}, {'voucherSeries': new RegExp(valor,'i')}] })
+            const reg = await models.Sale.find({ $or:[ {'comprobantNumber': new RegExp(valor, 'i')}, {'voucherSeries': new RegExp(valor,'i')}] })
             .sort({'createdAt':-1}) // ordena los registros de manera descendente (-1) muestra los ultimos registros, asc (1)
             .populate('user',{nombre:1})
             .populate('person',{name:1});
@@ -67,7 +67,7 @@ export default {
     /* 
     update: async (req,res,next) => {
         try {
-            const reg = await models.Revenue.findByIdAndUpdate({_id:req.body._id},{name: req.body.name, description: req.body.description }); // primer parámetro la búsqueda, segundo los valores a cambiar en ese registro
+            const reg = await models.Sale.findByIdAndUpdate({_id:req.body._id},{name: req.body.name, description: req.body.description }); // primer parámetro la búsqueda, segundo los valores a cambiar en ese registro
             res.status(200).json(reg);
         } catch (error) {
             res.status(500).send({
@@ -78,7 +78,7 @@ export default {
     },
     remove: async (req,res,next) => {
         try {
-            const reg = await models.Revenue.findByIdAndDelete({_id:req.body._id});
+            const reg = await models.Sale.findByIdAndDelete({_id:req.body._id});
             res.status(200).json(reg);
         } catch (error) {
             res.status(500).send({
@@ -92,11 +92,11 @@ export default {
     */
     activate: async (req,res,next) => {
         try {
-            const reg = await models.Revenue.findByIdAndUpdate({_id:req.body._id},{state:1});
+            const reg = await models.Sale.findByIdAndUpdate({_id:req.body._id},{state:1});
             // Actualizamos stock
             let details = reg.details; // traigo el array de detalles
             details.map( x => { // lo itero por cada articulo y le aumento el stock
-                increaseStock(x._id, x.quantity); // llamo a la func stock y le paso el id y cantidad 
+                decreaseStock(x._id, x.quantity); // llamo a la func disminuir stock pq se reactiva la venta y le paso el id y cantidad 
             });
             res.status(200).json(reg);
         } catch (error) {
@@ -108,11 +108,11 @@ export default {
     },
     deactivate: async (req,res,next) => {
         try {
-            const reg = await models.Revenue.findByIdAndUpdate({_id:req.body._id},{state:0});
+            const reg = await models.Sale.findByIdAndUpdate({_id:req.body._id},{state:0});
             // Actualizamos stock
             let details = reg.details; // traigo el array de detalles
             details.map( (x) => { // lo itero por cada articulo y le decremento el stock
-                decreaseStock(x._id, x.quantity); // llamo a la func stock y le paso el id y cantidad
+                increaseStock(x._id, x.quantity); // llamo a la func stock y le paso el id y cantidad
             });
             res.status(200).json(reg);
         } catch (error) {
