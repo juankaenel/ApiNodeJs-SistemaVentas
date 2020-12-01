@@ -122,4 +122,35 @@ export default {
             next(error);
         }
     },
+    twelveMonthChart: async (req,res,next) => { // Gráfico estadístico de 12 meses
+        // Nos retorna el total de ingresos de los ultimos 12 meses
+        try{
+            const reg = await models.Revenue.aggregate(
+                [
+                    {   // como agruparé...
+                        $group:{
+                            _id:{  // agrupación de ingresos por mes y año
+                                month:{$month:"$createdAt"}, 
+                                year:{$year:"$createdAt"}
+                            },
+                            total: {$sum:"$total"}, // sumame todo los totales de la propiedad total del modelo
+                            number:{$sum:1} // sumame el nro de ventas de 1 en 1
+                        }
+                    },
+                    {
+                        // como ordenaré
+                        $sort: {
+                            "_id.year":-1,"_id.month":-1 // por año y por mes en orden descendente
+                        }
+                    }
+                ]
+            ).limit(12); // 12 ultimos meses o 12 ultimas estadísticas
+            res.status(200).json(reg);
+        }catch(error){
+            res.status(500).send({
+                message:'Ocurrió un error!'
+            });
+            next(error);
+        }
+    }
 }

@@ -3,10 +3,10 @@ import revenueController from '../controllers/RevenueController';
 import auth from '../middlewares/auth';
 const router = routerx(); // routerx usamos para que las rutas nos devuelvan un promise
 
-// solo los administradores y almaceneros pueden usar estas rutas
-router.post('/add',auth.verifyGrocer ,revenueController.add);
+router.post('/add',auth.verifyGrocer ,revenueController.add); // solo los administradores y almaceneros pueden acceder
 router.get('/query',auth.verifyGrocer ,revenueController.query);
 router.get('/list',auth.verifyGrocer ,revenueController.list);
+router.get('/twelveMonthChart',auth.verifyUser,revenueController.twelveMonthChart); // el gráfico lo puede ver cualquier usuario
 router.put('/activate',auth.verifyGrocer ,revenueController.activate);
 router.put('/deactivate',auth.verifyGrocer ,revenueController.deactivate);
 /*  router.put('/update',auth.verifyGrocer ,revenueController.update);
