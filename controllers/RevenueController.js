@@ -152,5 +152,21 @@ export default {
             });
             next(error);
         }
-    }
+    },
+    checkDates: async (req,res,next) => { // consulta de fechas
+        try {
+            let start = req.query.start; 
+            let end = req.query.end; 
+            const reg = await models.Revenue.find({"createdAt" :{"$gte":start, "$lte":end}}) // filtra las fechas del modelo revenue por la fecha de comienzo y de fin que viajan desde el front
+            .sort({'createdAt':-1}) // ordena los registros de manera descendente (-1) 
+            .populate('user',{nombre:1})
+            .populate('person',{name:1});
+            res.status(200).json(reg);
+        } catch (error) {
+            res.status(500).send({
+                message: 'Ocurrió un error!'
+            });
+            next(error);
+        }
+    },
 }
