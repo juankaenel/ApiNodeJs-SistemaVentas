@@ -23,9 +23,9 @@ async function checkToken(token){
 
 
 export default {
-    // genera el token en base al id
-    encode: async (_id) => {
-        const token = jwt.sign({_id : _id}, 'clavesecretaparagenerartoken', {expiresIn: '1d'});
+    // genera el token en base al id, role, email
+    encode: async (_id,role,email) => {
+        const token = jwt.sign({_id : _id, role: role, email: email}, 'clavesecretaparagenerartoken', {expiresIn: '1d'});
         return token;
     },
     // recibe el token y verifica si es correcto, esto es más que nada para obtener el id en base al token y retornarlo a la funcion checkToken
