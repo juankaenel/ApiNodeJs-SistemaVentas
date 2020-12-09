@@ -105,7 +105,7 @@ export default {
             if (user){ // si existe un usuario
                 let match = await bcryptjs.compare(req.body.password, user.password); // comparo que el password ingresado coincida con el encriptado
                 if(match){
-                    let tokenReturn = await token.encode(user._id); // llamo al services/token -> metodo encode y le paso el id del objeto user
+                    let tokenReturn = await token.encode(user._id, user.role, user.email); // llamo al services/token -> metodo encode y le paso el id, rol y email, cuando pase a decodificar dentro del token viajarán esos datos
                     res.status(200).json({user,tokenReturn}) // retorna el token y el usuario en la petición post /api/user/login
                 }else{
                     res.status(404).send({
