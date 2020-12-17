@@ -55,11 +55,12 @@ export default {
             let pass = req.body.password;
             const reg0 = await models.User.findOne({_id : req.body._id});
             if (pass != reg0.password ){
-                req.body.password = bcryptjs.hash(req.body.password ) // encripto solamente cuando el password no está encriptado, sino no hay necesidad de encriptarlo
+                req.body.password = await bcryptjs.hash(req.body.password,10 ) // encripto solamente cuando el password no está encriptado, sino no hay necesidad de encriptarlo
             }
             const reg = await models.User.findByIdAndUpdate({_id:req.body._id}, {role: req.body.role, name: req.body.name,  docType: req.body.docType, docNumber: req.body.docNumber, direction: req.body.direction, phone: req.body.phone, email: req.body.email, password: req.body.password }); // primer parámetro la búsqueda, segundo los valores a cambiar en ese registro
             res.status(200).json(reg);
         } catch (error) {
+            console.log(error);
             res.status(500).send({
                 message: 'Ocurrió un error!'
             });
