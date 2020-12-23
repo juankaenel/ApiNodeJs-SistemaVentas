@@ -15,7 +15,7 @@ const articlesSchema = new Schema({
         unique:true,
         required:true
     },
-    descriptionn:{
+    description:{
         type: String,
         maxlength: 255,
     },
