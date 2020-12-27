@@ -54,7 +54,7 @@ export default {
             let valor = req.query.valor; 
             const reg = await models.Revenue.find({ $or:[ {'comprobantNumber': new RegExp(valor, 'i')}, {'voucherSeries': new RegExp(valor,'i')}] })
             .sort({'createdAt':-1}) // ordena los registros de manera descendente (-1) muestra los ultimos registros, asc (1)
-            .populate('user',{nombre:1})
+            .populate('user',{name:1})
             .populate('person',{name:1});
             res.status(200).json(reg);
         } catch (error) {
