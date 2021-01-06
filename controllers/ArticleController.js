@@ -53,8 +53,8 @@ export default {
     },
     list: async (req,res,next) => {
         try {
-            let valor = req.query.valor; 
-            const reg = await models.Article.find({ $or:[ {'name': new RegExp(valor, 'i')}, {'description': new RegExp(valor,'i')}] }, {createdAt:0})
+            let value = req.query.value; 
+            const reg = await models.Article.find({ $or:[ {'name': new RegExp(value, 'i')}, {'description': new RegExp(value,'i')}] }, {createdAt:0})
             .populate('category',{name:1}) // llamo al nombre de la categoria que hace referencia a ese articulo
             .sort({'createdAt':-1}) 
             res.status(200).json(reg);
